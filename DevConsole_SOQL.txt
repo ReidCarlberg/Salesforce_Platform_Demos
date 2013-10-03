@@ -1,0 +1,16 @@
+
+1) SOQL Query
+
+Select Id, Name From Account
+
+Select Id, Name, Owner.Name From Account
+
+Select Id, Name, Owner.Name From Account Limit 5
+
+Select Id, Name, Owner.Name From Account Order By Name Limit 5
+
+Select Id, Name, (Select Id, Name from Contacts) From Account 
+
+Select Count() from Account
+
+Select BillingState, count(Id) from Account Group By BillingState

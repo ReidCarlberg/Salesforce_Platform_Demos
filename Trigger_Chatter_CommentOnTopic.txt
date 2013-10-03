@@ -1,0 +1,75 @@
+
+Chatter Trigger Demo
+
+trigger FeedItemTrigger on FeedItem (after insert) {
+     List<FeedComment> newComments = new List<FeedComment>();
+    for (FeedItem current: trigger.new) {
+        if (current.body.contains('#demo')) {
+            FeedComment myComment = new FeedComment();
+            newComments.add(myComment);
+            myComment.feedItemId = current.id;
+            myComment.commentType = 'TextComment';
+            myComment.commentBody = 'Thank you sir may I have another.';
+        }
+    }
+    if (newComments.size() > 0) {
+        insert newComments;
+    }
+}
+
+Refactored Trigger
+
+trigger FeedItemTrigger on FeedItem (after insert) {
+     new FeedItemHelper().handleNewFeedItems(trigger.new);
+}
+
+Refactored Helper Class
+
+public class FeedItemHelper{
+   
+    public void handleNewFeedItems(List<FeedItem> newItems) {
+        List<FeedComment> newComments = new List<FeedComment>();
+        for (FeedItem current: newItems) {
+            if (current.body.contains('#demo')) {
+                FeedComment myComment = new FeedComment();
+                newComments.add(myComment);
+                myComment.feedItemId = current.id;
+                myComment.commentType = 'TextComment';
+                myComment.commentBody = 'Thank you sir may I have another.';
+            }
+        }
+        if (newComments.size() > 0) {
+            insert newComments;
+        }
+       
+       
+    }
+}
+
+Refactored Test
+
+@isTest
+public class FeedItemHelperTest{
+    static testmethod void testSimple() {
+         FeedItem testItem = new FeedItem();
+        testItem.Body = 'Hello World';
+        testItem.Type = 'TextPost';
+        testItem.ParentId = UserInfo.getUserId();
+        insert testItem;
+       
+        List<FeedComment> comments = [Select Id From FeedComment Where FeedItemId = :testItem.id];
+        System.assert(comments.size() == 0);
+    }
+   
+    static testmethod void testSimpleWithComment() {
+         FeedItem testItem = new FeedItem();
+        testItem.Body = 'Hello World #demo';
+        testItem.Type = 'TextPost';
+        testItem.ParentId = UserInfo.getUserId();
+        insert testItem;
+       
+        List<FeedComment> comments = [Select Id From FeedComment Where FeedItemId = :testItem.id];
+        System.assert(comments.size() == 1);
+    }
+       
+}

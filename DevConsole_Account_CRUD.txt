@@ -1,0 +1,19 @@
+
+2) Insert Data
+
+List<Account> newAccounts = new List<Account>();
+
+for (integer i = 0; i < 100; i++) {
+     newAccounts.add(new Account(Name = 'New Account ' + i, BillingState = 'ID'));
+}
+
+insert newAccounts;
+
+Run: Select BillingState, count(Id) from Account Group By BillingState
+
+3) Delete Account
+
+List<Account> idAccounts = [Select Id, Name From Account Where BillingState = 'ID'];
+Delete idAccounts;  
+
+Run: Select BillingState, count(Id) from Account Group By BillingState
